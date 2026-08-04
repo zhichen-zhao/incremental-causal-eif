@@ -73,9 +73,9 @@ and produces the comparison figure.
 
 The original Norwegian screening data are not publicly available. Following
 Section 6 of the paper, the application uses the **simulated** data set
-originally provided in the companion repository of Røysland et al. (2025):
+originally provided in the companion repository of [Røysland et al. (2025)](https://academic.oup.com/jrsssb/article/87/1/74/7710677):
 
-> https://github.com/palryalen/paper-code
+> https://github.com/palryalen/paper-code/tree/master/Graphical%20criteria%20for%20identification%20in%20continuous-time%20marginal%20structural%20survival%20models
 
 The simulated data are included in this repository. Users can directly run
 `data_application_ml.R`, which performs the required data processing and
