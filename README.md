@@ -7,7 +7,7 @@ This paper builds on the incremental-causal-effect framework for continuous time
 to treatment and derives the **efficient influence function (EIF)** for the
 estimand $\psi(\theta) = E[Y_{T(\theta)}]$, where the treatment-initiation
 hazard is scaled by a factor $\theta$. The EIF is Neyman-orthogonal, so the
-resulting AIPW-type estimator admits $\sqrt{n}$-inference **even when the
+resulting AIPW-type estimator admits root-$n$ inference **even when the
 nuisance functions are estimated by flexible machine learning**, via
 cross-fitting. The method also yields **uniform confidence bands** over a range
 of $\theta$ using a multiplier bootstrap.
@@ -21,7 +21,7 @@ $$\hat{\psi}(\theta) = \frac{1}{n} \sum_{i=1}^{n} \phi_i\big(\theta; \hat{\Lambd
 with two nuisances:
 
 - $\Lambda(t|l)$ — the treatment-initiation cumulative hazard,
-- $\mu(u, l) = E[Y | U = u, L = l]$ — the outcome regression.
+- $\mu(u, l) = E(Y | U = u, L = l)$ — the outcome regression.
 
 Because the score is Neyman-orthogonal, ML nuisance estimates combined with
 cross-fitting preserve root-$n$ inference.
@@ -72,15 +72,16 @@ and produces the comparison figure.
 ## Data
 
 The original Norwegian screening data are not publicly available. Following
-Section 6 of the paper, the application uses the **simulated** data set from the
-companion repository of Røysland et al. (2025):
+Section 6 of the paper, the application uses the **simulated** data set
+originally provided in the companion repository of Røysland et al. (2025):
 
 > https://github.com/palryalen/paper-code
 
-Download their simulated data, save it as `sim_data.RData` in the working
-directory, and then run `data_application_ml.R`. The simulated data has 1428
-individuals (1147 Amplicor/HC2, 281 PreTectProofer). No data file is included in
-this repository.
+The simulated data are included in this repository. Users can directly run
+`data_application_ml.R`, which performs the required data processing and
+generates the final analysis data set used in the application. The resulting
+data set contains 1,428 individuals (1,147 Amplicor/HC2 and 281
+PreTectProofer).
 
 ## Requirements
 
@@ -91,7 +92,7 @@ install.packages(c("survival", "flexsurv", "polspline", "ranger",
                    "dplyr", "ggplot2", "latex2exp"))
 ```
 
-`simulation_eif.R` uses `survival`, `flexsurv`; `simulation_ml.R` uses
+`simulation_eif.R` uses `survival`; `simulation_ml.R` uses
 `polspline`, `ranger`; `data_application_ml.R` uses all of the above plus
 `dplyr`, `ggplot2`, `latex2exp`.
 
