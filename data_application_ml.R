@@ -27,7 +27,6 @@ library(survival)
 library(ggplot2)
 library(polspline)
 library(ranger)
-library(flexsurv)   # flexsurvspline: spline hazard for Lambda
 #-----------------------------------------------------
 
 #-----------------------------------------------------
@@ -63,15 +62,19 @@ df <- df[df$U!=0, ]
 #-----------------------------------------------------
 dfDNA <- df[df$technology == "DNA", ]
 dfRNA <- df[df$technology == "RNA", ]
+
+# Coxph fit
+df$technology <- relevel(factor(df$technology), ref = "RNA")
+cox_fit <- coxph(Surv(U, Delta) ~ technology, data = df)
 #-----------------------------------------------------
 
 #-----------------------------------------------------
 # -- phi_i(theta) for the first and second integrals
-phi <- function(i, theta, data, mu_model, tau, Lambda, d_neg_S, u_int, surv_fit) {
+phi <- function(i, theta, data, mu_model, tau, Lambda, d_neg_S, u_int, hare_fit) {
   U_i <- data$U[i]
   Y_i <- data$Y[i]
   Delta_i <- data$Delta[i]
-  Lambda_i <- summary(surv_fit, t = U_i, type = "cumhaz", tidy = TRUE)[, "est"]
+  Lambda_i <- -log(1 - phare(q = U_i, cov = 0, fit = hare_fit))
   
   Lambda_vals <- Lambda
   d_neg_S_vals <- d_neg_S
@@ -106,11 +109,16 @@ cross_fitted_phi <- function(theta, data, tau, K = 5, global_seed = 12345) {
                        seed = global_seed + 100 * k)
     
     # Fit spline for Lambda
-    surv_fit <- flexsurvspline(Surv(U, Delta) ~ 1, data = train_data, k = 1)
+    hare_fit <- hare(data = train_data$U, delta = train_data$Delta, 
+                     cov = as.matrix(rep(0, nrow(train_data))))
     
     # Predict Lambda for validation set
+    L_valid <- as.matrix(rep(0, nrow(valid_data)))
     u_int <- sort(unique(train_data$U[train_data$Delta == 1]))
-    Lambda <- summary(surv_fit, t = u_int, type = "cumhaz", tidy = TRUE)[, "est"]
+    F_mat <- sapply(u_int, function(t) {phare(q = t, cov = L_valid, fit = hare_fit)})
+    F_v <- F_mat[1, ]
+    
+    Lambda <- -log(1 - F_v)
     Lambda <- c(Lambda, Lambda[length(Lambda)])
     neg_S <- -exp(-Lambda)
     d_neg_S <- diff(c(-1, neg_S))
@@ -120,7 +128,8 @@ cross_fitted_phi <- function(theta, data, tau, K = 5, global_seed = 12345) {
     
     # Compute phi for each obs in the validation fold (local index j maps to global idx_valid[j])
     phi_vals <- sapply(1:length(idx_valid), phi, theta = theta, data = valid_data, 
-                       mu_model = mu_model, tau = tau, Lambda = Lambda, d_neg_S = d_neg_S, u_int = u_int, surv_fit = surv_fit)
+                       mu_model = mu_model, tau = tau, Lambda = Lambda, 
+                       d_neg_S = d_neg_S, u_int = u_int, hare_fit = hare_fit)
     
     phi_i_v[idx_valid] <- phi_vals
   }
@@ -133,23 +142,26 @@ cross_fitted_phi <- function(theta, data, tau, K = 5, global_seed = 12345) {
 # Uniform confidence band via Rademacher multiplier bootstrap (Theorem 4).
 # Approximates the (1-alpha) quantile of sup_theta | multiplier process | to
 # get the critical value c_alpha for a band valid uniformly over theta.
-ucb <- function(est_mat, est, sd, B, alpha = 0.05) {
+ucb <- function(est_mat, est, sd, B, alpha = 0.05, seed = 2026) {
+  set.seed(seed)
+  
   n <- nrow(est_mat)
+  Z <- scale(est_mat, center = est, scale = sd)
+  
   sup_vals <- replicate(B, {
     xi <- sample(c(-1, 1), n, replace = TRUE)
-    Z <- scale(est_mat, center = est, scale = sd)
     process_b <- (t(xi) %*% Z) / sqrt(n)
     max(abs(process_b))
   })
   c_alpha <- quantile(sup_vals, 1 - alpha)
   
-  return(c_alpha)
+  list(c_alpha = c_alpha, sup_vals = sup_vals)
 }
 #-----------------------------------------------------
 
 #-----------------------------------------------------
 tau <- 4
-theta <- seq(0.5, 2, 0.01)
+theta <- sort(c(seq(0.5, 2, 0.01), exp(cox_fit$coefficients)))
 est_mat <- sapply(theta, cross_fitted_phi, data = dfRNA, tau = tau)
 est <- colMeans(est_mat)
 
@@ -159,7 +171,7 @@ se <- sd / sqrt(N)
 CI_L <- est + qnorm(0.025) * se; CI_U <- est + qnorm(0.975) * se
 
 B <- 10000
-c_alpha <- ucb(est_mat, est, sd, B, alpha = 0.05)
+c_alpha <- ucb(est_mat, est, sd, B, alpha = 0.05)[[1]]
 CB_L <- est - c_alpha * se; CB_U <- est + c_alpha * se
 
 result <- list(est_set = est, se_set = se, CI_L = CI_L, CI_U = CI_U, 
