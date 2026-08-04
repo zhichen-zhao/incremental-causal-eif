@@ -28,7 +28,6 @@
 
 #------------------------------------------------
 library(survival)   # coxph, basehaz for the Cox nuisance (Lambda)
-library(flexsurv)
 #------------------------------------------------
 
 #------------------------------------------------
@@ -84,7 +83,6 @@ p <- c()
 for (hz_ratio in cand_set) {
   df <- data_gen(N, para_set, hz_ratio)
   truth_set <- c(truth_set, mean(df$Y))  # true psi(theta) for this scenario
-  p <- c(p, mean(df$Delta))              # event (non-censoring) rate
 }
 #------------------------------------------------
 
@@ -176,38 +174,9 @@ psi_hat <- function(hz_ratio, data, tau) {
 #------------------------------------------------
 
 #------------------------------------------------
-# Bootstrap estimates for psi(theta)
-psi_boot_W <- function(hz_ratio, data, tau, B.seed) {
-  set.seed(B.seed)
-  boot_weights <- rexp(N)
-  boot_weights <- boot_weights / mean(boot_weights)
-  n <- nrow(data)
-  fit <- coxph(Surv(time = U, event = Delta) ~ L, data = data, weights = boot_weights)
-  mu_model <- lm(Y ~ U + L, data = data, weights = boot_weights)
-  bh <- basehaz(fit, centered = FALSE)
-  u_int <- bh$time
-  
-  boot_est <- mean(boot_weights * 
-                     sapply(1:n, phi_i, hz_ratio = hz_ratio, data = data, mu_model = mu_model,
-                            tau = tau, fit = fit, bh = bh, u_int = u_int))
-  
-  return(boot_est)
-}
-
-psi_ci_W <- function(hz_ratio, data, tau, B) {
-  psi_boots_W <- sapply(1:B, psi_boot_W, hz_ratio = hz_ratio, data = data, tau = tau)
-  
-  return(sd(psi_boots_W))
-}
-#------------------------------------------------
-
-#------------------------------------------------
-args <- commandArgs(trailingOnly = TRUE)
-N    <- as.integer(args[1])
-seed <- as.integer(args[2])
-
-#B <- 200
-tau <- 2
+N    <- 200
+seed <- 12345
+tau  <- 2
 
 set.seed(seed)
 df <- data_gen(N, para_set, c(0, 0, 0))
@@ -217,19 +186,8 @@ est <- colMeans(est_mat)
 se <- apply(est_mat, 2, sd) / sqrt(N)
 CP <- truth_set <= est + qnorm(0.975) * se & truth_set >= est + qnorm(0.025) * se
 
-#boot_se <- sapply(cand_set, psi_ci_W, data = df, tau = tau, B = B)
-#boot_CP <- truth_set <= est + qnorm(0.975) * boot_se & truth_set >= est + qnorm(0.025) * boot_se
-
-#result <- list(est_set = est, se_set = se, CP_set = CP, boot_se_set = boot_se, boot_CP_set = boot_CP)
-
 result <- list(est_set = est, se_set = se, CP_set = CP)
 #------------------------------------------------
 
-#------------------------------------------------
-dir_name <- paste0("eif_", N)
 
-dir.create(dir_name, showWarnings = FALSE, recursive = TRUE)
-
-saveRDS(result, file = file.path(getwd(), dir_name, paste0("seed_", seed, ".rds")))
-#------------------------------------------------
 
