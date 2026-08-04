@@ -14,14 +14,14 @@ of $\theta$ using a multiplier bootstrap.
 
 ## Estimator
 
-The AIPW estimator averages the influence function $\varphi$ over the sample,
+The AIPW estimator averages the influence function $\phi$ over the sample,
 
-$$\hat{\psi}(\theta) = \frac{1}{n} \sum_{i=1}^{n} \varphi_i\big(\theta; \hat{\Lambda}, \hat{\mu}\big),$$
+$$\hat{\psi}(\theta) = \frac{1}{n} \sum_{i=1}^{n} \phi_i\big(\theta; \hat{\Lambda}, \hat{\mu}\big),$$
 
 with two nuisances:
 
-- $\Lambda$ — the treatment-initiation cumulative hazard,
-- $\mu(u, l) = E[Y \mid U = u, L = l]$ — the outcome regression.
+- $\Lambda(t|l)$ — the treatment-initiation cumulative hazard,
+- $\mu(u, l) = E[Y | U = u, L = l]$ — the outcome regression.
 
 Because the score is Neyman-orthogonal, ML nuisance estimates combined with
 cross-fitting preserve $\sqrt{n}$-inference.
