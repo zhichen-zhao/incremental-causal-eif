@@ -7,7 +7,7 @@ This paper builds on the incremental-causal-effect framework for continuous time
 to treatment and derives the **efficient influence function (EIF)** for the
 estimand $\psi(\theta) = E[Y_{T(\theta)}]$, where the treatment-initiation
 hazard is scaled by a factor $\theta$. The EIF is Neyman-orthogonal, so the
-resulting AIPW-type estimator admits root-$n$ inference **even when the
+resulting AIPW-type estimator admits $\sqrt n$-inference **even when the
 nuisance functions are estimated by flexible machine learning**, via
 cross-fitting. The method also yields **uniform confidence bands** over a range
 of $\theta$ using a multiplier bootstrap.
@@ -24,7 +24,7 @@ with two nuisances:
 - $\mu(u, l) = E(Y | U = u, L = l)$ — the outcome regression.
 
 Because the score is Neyman-orthogonal, ML nuisance estimates combined with
-cross-fitting preserve root-$n$ inference.
+cross-fitting preserve $\sqrt n$-inference.
 
 ## Repository structure
 
@@ -94,10 +94,13 @@ install.packages(c("survival", "flexsurv", "polspline", "ranger",
 
 `simulation_eif.R` uses `survival`; `simulation_ml.R` uses
 `polspline`, `ranger`; `data_application_ml.R` uses all of the above plus
-`dplyr`, `ggplot2`, `latex2exp`.
+`dplyr`.
 
 ## Related
 
-The IPW method this paper improves on (Ying, Zhao & Xu, ICLR 2025) is in a
-separate repository.
+The IPW estimator from [Ying, A., **Zhao, Z.**, and Xu, R. (ICLR 2025)](https://openreview.net/forum?id=0mtz0pet1z), used as a baseline in this
+paper, is available at:
+
+> https://github.com/zhichen-zhao/incremental-causal-ipw
+
 
