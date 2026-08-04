@@ -24,7 +24,6 @@
 #-----------------------------------------------------
 library(dplyr)
 library(survival)
-library(ggplot2)
 library(polspline)
 library(ranger)
 #-----------------------------------------------------
