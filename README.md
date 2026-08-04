@@ -88,8 +88,7 @@ PreTectProofer).
 R with:
 
 ```r
-install.packages(c("survival", "flexsurv", "polspline", "ranger",
-                   "dplyr", "ggplot2", "latex2exp"))
+install.packages(c("survival", "flexsurv", "polspline", "ranger", "dplyr", "ggplot2", "latex2exp"))
 ```
 
 `simulation_eif.R` uses `survival`; `simulation_ml.R` uses
