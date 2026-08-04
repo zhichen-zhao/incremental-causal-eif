@@ -1,7 +1,7 @@
 # Efficient Inference for Incremental Causal Effects of Time to Treatment
 
-Code accompanying **"Efficient Inference for Incremental Causal Effects of Time
-to Treatment"** (Zhao, Ying & Xu; under review at *Biometrika*).
+Code accompanying **["Efficient Inference for Incremental Causal Effects of Time
+to Treatment"](https://arxiv.org/abs/2605.29348)** (**Zhao, Z.**, Ying, A.,  and Xu, R.; under review at *Biometrika*).
 
 This paper builds on the incremental-causal-effect framework for continuous time
 to treatment and derives the **efficient influence function (EIF)** for the
@@ -32,10 +32,9 @@ cross-fitting preserve $\sqrt{n}$-inference.
 incremental-causal-eif/
 ├── README.md
 ├── R/
-│   ├── simulation_eif.R        # Section 5: AIPW with (semi)parametric nuisances, NO cross-fitting
-│   ├── simulation_ml.R         # Section 5: AIPW with ML nuisances + K-fold cross-fitting
-│   └── data_application_ml.R   # Section 6: HPV / CIN2+ application (cross-fitted ML estimator)
-└── .gitignore
+    ├── simulation_eif.R        # Section 5: AIPW with (semi)parametric nuisances, NO cross-fitting
+    ├── simulation_ml.R         # Section 5: AIPW with ML nuisances + K-fold cross-fitting
+    └── data_application_ml.R   # Section 6: HPV / CIN2+ application (cross-fitted ML estimator)
 ```
 
 ## The three scripts
@@ -101,13 +100,3 @@ install.packages(c("survival", "flexsurv", "polspline", "ranger",
 The IPW method this paper improves on (Ying, Zhao & Xu, ICLR 2025) is in a
 separate repository.
 
-## Citation
-
-```bibtex
-@article{zhao2026efficient,
-  title   = {Efficient Inference for Incremental Causal Effects of Time to Treatment},
-  author  = {Zhao, Zhichen and Ying, Andrew and Xu, Ronghui},
-  journal = {Biometrika (under review)},
-  year    = {2026}
-}
-```
