@@ -24,7 +24,7 @@ with two nuisances:
 - $\mu(u, l) = E[Y | U = u, L = l]$ — the outcome regression.
 
 Because the score is Neyman-orthogonal, ML nuisance estimates combined with
-cross-fitting preserve $\sqrt{n}$-inference.
+cross-fitting preserve root-$n$ inference.
 
 ## Repository structure
 
