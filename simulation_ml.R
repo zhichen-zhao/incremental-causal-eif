@@ -65,12 +65,10 @@ cand_set <-
   list(c(0.9, 0.3, -0.7), c(0.9, 0.5, -0.7), c(0.7, 0.3, -0.5), c(0.7, 0.5, -0.5), 
        c(0.5, 0.1, -0.1), c(0.5, 0.1, -0.2), c(0.3, 0.1,  0.4), c(0.3, 0.1,  0.6))
 truth_set <- c()
-p <- c()
 
 for (hz_ratio in cand_set) {
   df <- data_gen(N, para_set, hz_ratio)
   truth_set <- c(truth_set, mean(df$Y))
-  p <- c(p, mean(df$Delta))
 }
 #------------------------------------------------
 
@@ -191,11 +189,9 @@ cross_fitted_phi <- function(hz_ratio, data, tau, K = 10, global_seed = 12345) {
 #------------------------------------------------
 
 #------------------------------------------------
-args <- commandArgs(trailingOnly = TRUE)
-N    <- as.integer(args[1])
-seed <- as.integer(args[2])
-
-tau <- 2
+N    <- 200
+seed <- 12345
+tau  <- 2
 
 set.seed(seed)
 df <- data_gen(N, para_set, c(0, 0, 0))
@@ -208,11 +204,4 @@ CP <- truth_set <= est + qnorm(0.975) * se & truth_set >= est + qnorm(0.025) * s
 result <- list(est_set = est, se_set = se, CP_set = CP)
 #------------------------------------------------
 
-#------------------------------------------------
-dir_name <- paste0("ml_", N)
-
-dir.create(dir_name, showWarnings = FALSE, recursive = TRUE)
-
-saveRDS(result, file = file.path(getwd(), dir_name, paste0("seed_", seed, ".rds")))
-#------------------------------------------------
 
