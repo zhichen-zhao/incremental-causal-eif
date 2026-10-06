@@ -1,7 +1,7 @@
 # Efficient Inference for Incremental Causal Effects of Time to Treatment
 
 Code accompanying **["Efficient Inference for Incremental Causal Effects of Time
-to Treatment"](https://arxiv.org/abs/2605.29348)** (**Zhao, Z.**, Ying, A.,  and Xu, R.; under review at *Biometrika*).
+to Treatment"](https://arxiv.org/abs/2605.29348)** (**Zhao, Z.**, Ying, A.,  and Xu, R.).
 
 This paper builds on the incremental-causal-effect framework for continuous time
 to treatment and derives the **efficient influence function (EIF)** for the
